@@ -3,6 +3,8 @@
 A small, standard-library-only Go CLI that validates caption coverage and US
 English language. Supports UTF-8 `.srt` and `.vtt` files. No video is needed.
 
+See [the logical flow diagrams](FLOW.md) for a visual walkthrough of the code.
+
 ## Build and run
 
 Requires Go 1.22 or later.

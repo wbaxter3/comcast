@@ -68,3 +68,7 @@ environment and plugin context is omitted. Assistant responses are not included.
 ### 16. Private Git repository
 
 > initialize git repo here and push to my remote as private repo for now
+
+### 17. Logical flow diagram
+
+> create diagram as file for aid in understanding logical flow
