@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+// languageResponse is the JSON object returned by the language service.
+type languageResponse struct {
+	Lang string `json:"lang"`
+}
+
 // captionText separates cue payloads with newlines so adjacent words do not merge.
 func captionText(cues []Cue) string {
 	texts := make([]string, 0, len(cues))
@@ -59,9 +64,7 @@ func detectLanguage(endpoint, text string, timeout time.Duration) (string, error
 
 	// Unmarshal checks the entire body, rejecting trailing JSON or garbage while
 	// allowing additional object fields the service may introduce later.
-	var result struct {
-		Lang string `json:"lang"`
-	}
+	var result languageResponse
 	if err := json.Unmarshal(body, &result); err != nil {
 		return "", fmt.Errorf("invalid language response: %w", err)
 	}

@@ -19,13 +19,13 @@ func TestRun(t *testing.T) {
 		types                   []string
 		code                    int
 	}{
-		{"passes threshold", "70", `{"lang":"en-US"}`, nil, 0},
-		{"zero required", "0", `{"lang":"en-US"}`, nil, 0},
-		{"coverage fails", "80", `{"lang":"en-US"}`, []string{"caption_coverage"}, 0},
-		{"full required", "100", `{"lang":"en-US"}`, []string{"caption_coverage"}, 0},
-		{"language fails", "70", `{"lang":"es-ES"}`, []string{"incorrect_language"}, 0},
-		{"both fail", "80", `{"lang":"en-GB"}`, []string{"caption_coverage", "incorrect_language"}, 0},
-		{"service fails no partial results", "80", `bad`, nil, 1},
+		{name: "passes threshold", percent: "70", response: `{"lang":"en-US"}`, types: nil, code: 0},
+		{name: "zero required", percent: "0", response: `{"lang":"en-US"}`, types: nil, code: 0},
+		{name: "coverage fails", percent: "80", response: `{"lang":"en-US"}`, types: []string{"caption_coverage"}, code: 0},
+		{name: "full required", percent: "100", response: `{"lang":"en-US"}`, types: []string{"caption_coverage"}, code: 0},
+		{name: "language fails", percent: "70", response: `{"lang":"es-ES"}`, types: []string{"incorrect_language"}, code: 0},
+		{name: "both fail", percent: "80", response: `{"lang":"en-GB"}`, types: []string{"caption_coverage", "incorrect_language"}, code: 0},
+		{name: "service fails no partial results", percent: "80", response: `bad`, types: nil, code: 1},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

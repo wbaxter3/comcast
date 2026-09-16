@@ -15,18 +15,18 @@ func TestLanguage(t *testing.T) {
 		status           int
 		bad              bool
 	}{
-		{"english", `{"lang":"en-US"}`, "en-US", 200, false},
-		{"other", `{"lang":"en-GB"}`, "en-GB", 200, false},
-		{"extra fields", `{"lang":"en-US","score":1}`, "en-US", 200, false},
-		{"missing", `{}`, "", 200, true},
-		{"wrong type", `{"lang":123}`, "", 200, true},
-		{"empty", `{"lang":" "}`, "", 200, true},
-		{"null", `null`, "", 200, true},
-		{"malformed", `{`, "", 200, true},
-		{"trailing json", `{"lang":"en-US"}{}`, "", 200, true},
-		{"server error", `{}`, "", 500, true},
-		{"redirect", `{}`, "", 302, true},
-		{"too big", strings.Repeat(" ", (1<<20)+1), "", 200, true},
+		{name: "english", body: `{"lang":"en-US"}`, want: "en-US", status: 200, bad: false},
+		{name: "other", body: `{"lang":"en-GB"}`, want: "en-GB", status: 200, bad: false},
+		{name: "extra fields", body: `{"lang":"en-US","score":1}`, want: "en-US", status: 200, bad: false},
+		{name: "missing", body: `{}`, want: "", status: 200, bad: true},
+		{name: "wrong type", body: `{"lang":123}`, want: "", status: 200, bad: true},
+		{name: "empty", body: `{"lang":" "}`, want: "", status: 200, bad: true},
+		{name: "null", body: `null`, want: "", status: 200, bad: true},
+		{name: "malformed", body: `{`, want: "", status: 200, bad: true},
+		{name: "trailing json", body: `{"lang":"en-US"}{}`, want: "", status: 200, bad: true},
+		{name: "server error", body: `{}`, want: "", status: 500, bad: true},
+		{name: "redirect", body: `{}`, want: "", status: 302, bad: true},
+		{name: "too big", body: strings.Repeat(" ", (1<<20)+1), want: "", status: 200, bad: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

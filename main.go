@@ -11,6 +11,24 @@ import (
 	"time"
 )
 
+// CoverageFailure describes how far caption coverage falls below the target.
+type CoverageFailure struct {
+	Type     string  `json:"type"`
+	Required float64 `json:"required_percent"`
+	Actual   float64 `json:"actual_percent"`
+	Covered  float64 `json:"covered_seconds"`
+	Window   float64 `json:"window_seconds"`
+	Start    float64 `json:"start_seconds"`
+	End      float64 `json:"end_seconds"`
+}
+
+// LanguageFailure records the expected and detected language codes.
+type LanguageFailure struct {
+	Type     string `json:"type"`
+	Expected string `json:"expected"`
+	Actual   string `json:"actual"`
+}
+
 func main() { os.Exit(run(os.Args[1:], os.Stdout, os.Stderr)) }
 
 // run keeps process exit and global streams out of the application logic so tests
@@ -81,23 +99,23 @@ func run(args []string, stdout, stderr io.Writer) int {
 	results := []any{}
 	// Compare before division to avoid rounding an exact threshold down (e.g. 29%).
 	if float64(covered)*100 < *required*float64(b-a) {
-		results = append(results, struct {
-			Type     string  `json:"type"`
-			Required float64 `json:"required_percent"`
-			Actual   float64 `json:"actual_percent"`
-			Covered  float64 `json:"covered_seconds"`
-			Window   float64 `json:"window_seconds"`
-			Start    float64 `json:"start_seconds"`
-			End      float64 `json:"end_seconds"`
-		}{"caption_coverage", *required, actual, covered.Seconds(), (b - a).Seconds(), *start, *end})
+		results = append(results, CoverageFailure{
+			Type:     "caption_coverage",
+			Required: *required,
+			Actual:   actual,
+			Covered:  covered.Seconds(),
+			Window:   (b - a).Seconds(),
+			Start:    *start,
+			End:      *end,
+		})
 	}
 
 	if lang != "en-US" {
-		results = append(results, struct {
-			Type     string `json:"type"`
-			Expected string `json:"expected"`
-			Actual   string `json:"actual"`
-		}{"incorrect_language", "en-US", lang})
+		results = append(results, LanguageFailure{
+			Type:     "incorrect_language",
+			Expected: "en-US",
+			Actual:   lang,
+		})
 	}
 
 	// Encode adds a newline after each object; no failures means no stdout output.

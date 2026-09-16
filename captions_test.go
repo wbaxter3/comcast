@@ -11,19 +11,19 @@ func TestParseCaptions(t *testing.T) {
 		name, format, input string
 		count               int
 	}{
-		{"srt", ".srt", "1\n00:00:01,000 --> 00:00:02,500\nHello\nworld", 1},
-		{"bom crlf", ".vtt", "\ufeffWEBVTT\r\n\r\n00:01.000 --> 00:02.000\r\nHi", 1},
-		{"vtt blocks", ".vtt", "WEBVTT title\nKind: captions\n\nNOTE comment\nignore\n\nSTYLE\n::cue { color: red }\n\nREGION\nid:one\n\ncue-id\n00:00:01.000 --> 00:00:02.000 align:start\nHello\nworld", 1},
-		{"missing header", ".vtt", "00:01.000 --> 00:02.000\nHi", 0},
-		{"missing header separator", ".vtt", "WEBVTT\n00:01.000 --> 00:02.000\nHi", 0},
-		{"bad identifier", ".srt", "abc\n00:00:01,000 --> 00:00:02,000\nHi", 0},
-		{"bad timestamp", ".srt", "1\n00:60:00,000 --> 00:61:00,000\nHi", 0},
-		{"reverse", ".srt", "1\n00:00:02,000 --> 00:00:01,000\nHi", 0},
-		{"missing time", ".srt", "1", 0},
-		{"empty", ".srt", "", 0},
-		{"no text", ".vtt", "WEBVTT\n\n00:01.000 --> 00:02.000\n ", 0},
-		{"binary", ".srt", "\x00", 0},
-		{"invalid utf8", ".srt", "\xff", 0},
+		{name: "srt", format: ".srt", input: "1\n00:00:01,000 --> 00:00:02,500\nHello\nworld", count: 1},
+		{name: "bom crlf", format: ".vtt", input: "\ufeffWEBVTT\r\n\r\n00:01.000 --> 00:02.000\r\nHi", count: 1},
+		{name: "vtt blocks", format: ".vtt", input: "WEBVTT title\nKind: captions\n\nNOTE comment\nignore\n\nSTYLE\n::cue { color: red }\n\nREGION\nid:one\n\ncue-id\n00:00:01.000 --> 00:00:02.000 align:start\nHello\nworld", count: 1},
+		{name: "missing header", format: ".vtt", input: "00:01.000 --> 00:02.000\nHi", count: 0},
+		{name: "missing header separator", format: ".vtt", input: "WEBVTT\n00:01.000 --> 00:02.000\nHi", count: 0},
+		{name: "bad identifier", format: ".srt", input: "abc\n00:00:01,000 --> 00:00:02,000\nHi", count: 0},
+		{name: "bad timestamp", format: ".srt", input: "1\n00:60:00,000 --> 00:61:00,000\nHi", count: 0},
+		{name: "reverse", format: ".srt", input: "1\n00:00:02,000 --> 00:00:01,000\nHi", count: 0},
+		{name: "missing time", format: ".srt", input: "1", count: 0},
+		{name: "empty", format: ".srt", input: "", count: 0},
+		{name: "no text", format: ".vtt", input: "WEBVTT\n\n00:01.000 --> 00:02.000\n ", count: 0},
+		{name: "binary", format: ".srt", input: "\x00", count: 0},
+		{name: "invalid utf8", format: ".srt", input: "\xff", count: 0},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

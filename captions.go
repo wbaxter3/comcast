@@ -125,7 +125,7 @@ func parseCaptions(data, format string) ([]Cue, error) {
 		// An empty payload cannot contribute coverage or language evidence.
 		text := strings.TrimSpace(strings.Join(block[timing+1:], "\n"))
 		if text != "" {
-			cues = append(cues, Cue{a, b, text})
+			cues = append(cues, Cue{Start: a, End: b, Text: text})
 		}
 	}
 
