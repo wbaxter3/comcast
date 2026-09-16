@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -95,5 +97,29 @@ func TestOutputFailure(t *testing.T) {
 	var stderr bytes.Buffer
 	if code := run([]string{"-start", "0", "-end", "10", "-coverage", "0", "-endpoint", server.URL, "testdata/sample.vtt"}, brokenWriter{}, &stderr); code != 1 {
 		t.Fatal(code)
+	}
+}
+
+// An exact 29% result must not fail because division rounds it slightly down.
+func TestExactCoverageThreshold(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { io.WriteString(w, `{"lang":"en-US"}`) }))
+	defer server.Close()
+
+	path := filepath.Join(t.TempDir(), "threshold.srt")
+	if err := os.WriteFile(path, []byte("1\n00:00:00,000 --> 00:00:29,000\nHello\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, percent := range []string{"29", "29.000001"} {
+		var out, stderr bytes.Buffer
+
+		code := run([]string{"-start", "0", "-end", "100", "-coverage", percent, "-endpoint", server.URL, path}, &out, &stderr)
+		if code != 0 || stderr.Len() != 0 {
+			t.Fatalf("code=%d stderr=%s", code, &stderr)
+		}
+
+		if (out.Len() == 0) != (percent == "29") {
+			t.Fatalf("threshold=%s output=%s", percent, &out)
+		}
 	}
 }

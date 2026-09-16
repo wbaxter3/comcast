@@ -70,7 +70,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 
 	covered := coverage(cues, a, b)
-	actual := float64(covered) / float64(b-a) * 100
+	actual := float64(covered) * 100 / float64(b-a)
 
 	// Language applies to the whole file, even if coverage in the window fails.
 	lang, err := detectLanguage(*endpoint, captionText(cues), *timeout)
@@ -79,7 +79,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 	// Wait until both checks finish before emitting any validation results.
 	results := []any{}
-	if actual < *required {
+	// Compare before division to avoid rounding an exact threshold down (e.g. 29%).
+	if float64(covered)*100 < *required*float64(b-a) {
 		results = append(results, struct {
 			Type     string  `json:"type"`
 			Required float64 `json:"required_percent"`
